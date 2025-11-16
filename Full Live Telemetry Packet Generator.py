@@ -3,6 +3,7 @@ import threading
 import csv
 import os
 from datetime import datetime
+from PyQt6.QtWidgets import QLabel
 
 # /dump to print current values
 # /save to save to CSV
