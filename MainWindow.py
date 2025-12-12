@@ -8,6 +8,9 @@ from custom_widgets.PlainTextDisplay import PlainTextDisplay
 from dialogs.ViewDatatypesDialog import ViewDatatypesDialog
 from dialogs.ViewLayoutsDialog import ViewLayoutsDialog
 from dialogs.ViewScriptsDialog import ViewScriptsDialog
+from utils.DataTypes import DisplayMeterSerial
+from utils.Layout import load_default_layout, load_layout
+from utils.OBDPaths import OBDPaths
 
 slider_test = True
 
@@ -23,6 +26,7 @@ class MainWindow(QMainWindow):
 
         self.__set_monitor_widgets_items()
         self.__create_menu_items()
+        self.current_ui_layout = None
 
     def __set_monitor_widgets_items(self):
         if slider_test:
@@ -43,8 +47,29 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(self.central_widget)
 
-    def __load_from_json(self, json_file):
-        pass #TODO
+    def __load_from_json(self, json_file): # Perhaps split this into load default layout and set layout
+        """Originally intended to hook up to the load_layout menu item, this has been repurposed for now to handle default layout testing. """
+        with open(json_file, encoding='utf-8') as json_file:
+            selected_layout = load_layout(json_file.read())
+
+        if selected_layout is not None:
+            if len(selected_layout.widgets) > 0:
+                self.current_ui_layout = selected_layout
+                self.update_layout()
+
+    def update_layout(self):
+        """ Updates the GUI when the layout assigned to the current_ui_layout member changes.
+            Right now, the test classes for UI elements are still in here and the HORIZONTAL_TACHOMETER does not work
+        """
+        val_test_widget = QWidget(self.central_widget)
+        for key in self.current_ui_layout.widgets:
+            match self.current_ui_layout.widgets[key].default_display_type.value:
+                case DisplayMeterSerial.CIRCULAR_GAUGE.value:
+                    self.__add_test_odometer(self.current_ui_layout.widgets[key].name, val_test_widget)
+                case DisplayMeterSerial.PLAIN_TEXT:
+                    self.__add_test_plain_text(key, val_test_widget)
+                case DisplayMeterSerial.HORIZONTAL_TACHOMETER:
+                    pass
 
     ######################################################################
     ####################  Display test setup  ############################
@@ -91,9 +116,10 @@ class MainWindow(QMainWindow):
         save_current_layout.triggered.connect(self.__save_current_layout)
 
         load_layout_submenu = QMenu("Load layout", self)
-        for f in os.listdir("./config/layouts"):
+
+        for f in os.listdir(OBDPaths.Layouts):
             layout_action = QAction(f.replace(".json", ""), self)
-            layout_action.triggered.connect(lambda _, file=f: self.__load_from_json(file))
+            layout_action.triggered.connect(lambda _, file=f: self.__load_from_json(OBDPaths.Layouts / file))
             load_layout_submenu.addAction(layout_action)
 
         save_current_layout_as_default = QAction("Save current layout as default", self)
