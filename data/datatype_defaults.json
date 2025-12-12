@@ -1,0 +1,83 @@
+{
+  "oil_temp": {
+    "name": "Oil Temperature",
+    "min_value": 0,
+    "max_value": 300,
+    "default_unit": "°F",
+    "alternate_units": ["°C"],
+    "default_display_type": "plain_text",
+    "alternate_display_types": ["circular_gauge", "horizontal_tachometer"]
+  },
+  "coolant_temp": {
+    "name": "Coolant Temperature",
+    "min_value": 0,
+    "max_value": 260,
+    "default_unit": "°F",
+    "alternate_units": ["°C"],
+    "default_display_type": "circular_gauge",
+    "alternate_display_types": ["plain_text", "horizontal_tachometer"]
+  },
+  "engine_rpm": {
+    "name": "Engine RPM",
+    "min_value": 0,
+    "max_value": 8000,
+    "default_unit": "RPM",
+    "alternate_units": ["r/min"],
+    "default_display_type": "circular_gauge",
+    "alternate_display_types": ["plain_text", "horizontal_tachometer"]
+  },
+  "speed": {
+    "name": "Vehicle Speed",
+    "min_value": 0,
+    "max_value": 160,
+    "default_unit": "mph",
+    "alternate_units": ["km/h"],
+    "default_display_type": "circular_gauge",
+    "alternate_display_types": ["plain_text", "horizontal_tachometer"]
+  },
+  "fuel_pressure": {
+    "name": "Fuel Pressure",
+    "min_value": 0,
+    "max_value": 100,
+    "default_unit": "psi",
+    "alternate_units": ["kPa", "bar"],
+    "default_display_type": "circular_gauge",
+    "alternate_display_types": ["plain_text", "horizontal_tachometer"]
+  },
+  "oil_pressure": {
+    "name": "Oil Pressure",
+    "min_value": 0,
+    "max_value": 100,
+    "default_unit": "psi",
+    "alternate_units": ["kPa", "bar"],
+    "default_display_type": "circular_gauge",
+    "alternate_display_types": ["plain_text", "horizontal_tachometer"]
+  },
+  "engine_load_perc": {
+    "name": "Engine Load",
+    "min_value": 0,
+    "max_value": 100,
+    "default_unit": "%",
+    "alternate_units": [],
+    "default_display_type": "circular_gauge",
+    "alternate_display_types": ["plain_text", "horizontal_tachometer"]
+  },
+  "iat": {
+    "name": "Intake Air Temp",
+    "min_value": 0,
+    "max_value": 200,
+    "default_unit": "°F",
+    "alternate_units": ["°C"],
+    "default_display_type": "circular_gauge",
+    "alternate_display_types": ["plain_text", "horizontal_tachometer"]
+  },
+  "volts": {
+    "name": "Battery Voltage",
+    "min_value": 0,
+    "max_value": 18,
+    "default_unit": "V",
+    "alternate_units": [],
+    "default_display_type": "circular_gauge",
+    "alternate_display_types": ["plain_text", "horizontal_tachometer"]
+  }
+}

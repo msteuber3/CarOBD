@@ -1,0 +1,7 @@
+{
+  "Test" : {
+    "default": true,
+    "source": "test",
+    "defaults" : ["engine_rpm", "oil_temp", "coolant_temp"]
+  }
+}

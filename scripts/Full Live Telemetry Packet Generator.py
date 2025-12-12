@@ -16,7 +16,7 @@ dump_requested = False
 save_requested = False
 
 # CSV output file
-CSV_FILE = "obd2_data_log.csv"
+CSV_FILE = "../data/obd2_data_log.csv"
 
 # Create CSV with header if it doesn't exist
 if not os.path.exists(CSV_FILE):
