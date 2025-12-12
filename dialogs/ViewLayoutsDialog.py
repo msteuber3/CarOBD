@@ -35,7 +35,7 @@ class ViewLayoutsDialog(QDialog):
             is_default_widget = self.create_default_widget(layouts_dict[key])
             self.tree.setItemWidget(is_default_item, 0, is_default_widget)
 
-            source_item.setText(1, layouts_dict[key].source)
+            source_item.setText(0, f"Source: {layouts_dict[key].source}")
             self.tree.setItemWidget(source_item, 0, None)
 
             for widget in layouts_dict[key].widgets:

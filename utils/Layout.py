@@ -2,7 +2,7 @@ import json
 import os
 from dataclasses import dataclass, field, asdict
 from typing import List, Dict
-from utils.DataTypes import DataType, serialize_datatypes_to_json, load_datatypes_from_json
+from utils.DataTypes import DataType, serialize_datatypes_to_json, load_datatypes_from_json, DisplayMeterSerial
 from utils.OBDPaths import OBDPaths
 
 
@@ -34,16 +34,26 @@ def load_layout(json_str: str) -> Layout:
     Parses a JSON string into a Layouts object, splitting the single 'widgets'
     list into default_widgets, custom_widgets, and generating the sequence_map.
     """
-    data = json.loads(json_str).items()
-    layout_name = data["name"]
-    is_default = data["default"]
-    data_source = data["source"]
-    layout_widgets = data["widgets"]
+    data = json.loads(json_str)
+    datatypes_dict = {}
+    for key, item in data["widgets"].items():
+        default_display = DisplayMeterSerial(item["default_display_type"])
+        alt_displays = [DisplayMeterSerial(dt) for dt in item["alternate_display_types"]]
+        datatypes_dict[key] = DataType(
+            name=item["name"],
+            min_value=item["min_value"],
+            max_value=item["max_value"],
+            default_unit=item["default_unit"],
+            alternate_units=item["alternate_units"],
+            default_display_type=default_display,
+            alternate_display_types=alt_displays
+        )
+
     return Layout(
         default=data["default"],
         name=data["name"],
         source=data["source"],
-        widgets=load_datatypes_from_json(data["widgets"]),
+        widgets=datatypes_dict,
     )
 
 

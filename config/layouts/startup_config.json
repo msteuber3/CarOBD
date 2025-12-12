@@ -1,27 +1,33 @@
 {
-  "Test" : {
-    "default": true,
-    "name": "idiot layout",
-    "source": "test",
-    "widgets" : {
-      "engine_load_perc": {
-        "name": "Engine Load",
-        "min_value": 0,
-        "max_value": 100,
-        "default_unit": "%",
-        "alternate_units": [],
-        "default_display_type": "circular_gauge",
-        "alternate_display_types": ["plain_text", "horizontal_tachometer"]
-      },
-      "iat": {
-        "name": "Intake Air Temp",
-        "min_value": 0,
-        "max_value": 200,
-        "default_unit": "°F",
-        "alternate_units": ["°C"],
-        "default_display_type": "circular_gauge",
-        "alternate_display_types": ["plain_text", "horizontal_tachometer"]
-      }
+  "default": true,
+  "name": "idiot layout",
+  "source": "test",
+  "widgets" : {
+    "engine_load_perc": {
+      "name": "Engine Load",
+      "min_value": 0,
+      "max_value": 100,
+      "default_unit": "%",
+      "alternate_units": [],
+      "default_display_type": "circular_gauge",
+      "alternate_display_types": [
+        "plain_text",
+        "horizontal_tachometer"
+      ]
+    },
+    "iat": {
+      "name": "Intake Air Temp",
+      "min_value": 0,
+      "max_value": 200,
+      "default_unit": "°F",
+      "alternate_units": [
+        "°C"
+      ],
+      "default_display_type": "circular_gauge",
+      "alternate_display_types": [
+        "plain_text",
+        "horizontal_tachometer"
+      ]
     }
   }
 }

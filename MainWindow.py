@@ -1,9 +1,7 @@
 import os
-
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QSlider, QWidget, QSizePolicy, QHBoxLayout, QMenu
-
 from dialogs.AddWidgetDialog import AddWidgetDialog
 from custom_widgets.OdometerWidget import OdometerWidget
 from custom_widgets.PlainTextDisplay import PlainTextDisplay
