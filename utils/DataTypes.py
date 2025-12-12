@@ -36,8 +36,8 @@ def load_datatypes_from_json(json_data: str) -> Dict[str, DataType]:
     datatype_objects = {}
 
     for key, item in parsed_data.items():
-        def_disp = DisplayMeterSerial(item["default_display_type"])
-        alt_disps = [DisplayMeterSerial(dt) for dt in item["alternate_display_types"]]
+        default_display = DisplayMeterSerial(item["default_display_type"])
+        alt_displays = [DisplayMeterSerial(dt) for dt in item["alternate_display_types"]]
 
         dt_obj = DataType(
             name=item["name"],
@@ -45,10 +45,29 @@ def load_datatypes_from_json(json_data: str) -> Dict[str, DataType]:
             max_value=item["max_value"],
             default_unit=item["default_unit"],
             alternate_units=item["alternate_units"],
-            default_display_type=def_disp,
-            alternate_display_types=alt_disps
+            default_display_type=default_display,
+            alternate_display_types=alt_displays
         )
 
         datatype_objects[key] = dt_obj
 
     return datatype_objects
+
+def serialize_datatypes_to_json(datatypes: Dict[str, DataType]) -> str:
+    """
+    Serializes a dictionary of DataType objects to a JSON string.
+    """
+    serialized_data = {}
+
+    for key, datatype in datatypes.items():
+        serialized_data[key] = {
+            "name": datatype.name,
+            "min_value": datatype.min_value,
+            "max_value": datatype.max_value,
+            "default_unit": datatype.default_unit,
+            "alternate_units": datatype.alternate_units,
+            "default_display_type": datatype.default_display_type.value,
+            "alternate_display_types": [dt.value for dt in datatype.alternate_display_types]
+        }
+
+    return json.dumps(serialized_data)

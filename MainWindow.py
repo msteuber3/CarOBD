@@ -130,7 +130,7 @@ class MainWindow(QMainWindow):
 
         if dialog.exec():
             source, name, display_type = dialog.get_inputs()
-            self.add_new_widget(source, name, display_type)
+            self.__add_new_widget(source, name, display_type)
         else:
             print("Dialog closed")
 
@@ -153,7 +153,7 @@ class MainWindow(QMainWindow):
         print("Edit state started")
 
     def __view_layouts(self):
-        dialog = ViewLayoutsDialog(self)
+        dialog = ViewLayoutsDialog(parent=self)
         dialog.exec()
 
     def __save_current_layout(self): #TODO
