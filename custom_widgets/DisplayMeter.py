@@ -2,14 +2,17 @@ from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QPainter, QFont, QColor
 from PyQt6.QtWidgets import QWidget, QSlider, QVBoxLayout
 
+from utils.DataTypes import DataType
+
+
 class DisplayMeter(QWidget):
-    def __init__(self, name, parent=None):
+    def __init__(self, datatype: DataType, parent=None):
         super().__init__(parent)
 
         self.value = 0
-        self.min_value = 0
-        self.max_value = 260
-        self.name = name
+        self.min_value = datatype.min_value
+        self.max_value = datatype.max_value
+        self.name = datatype.name
         self.text_color = QColor(20, 20, 20)
 
     def set_value(self, value):

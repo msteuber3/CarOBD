@@ -3,8 +3,6 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List, Dict
 
-from custom_widgets.DisplayMeter import DisplayMeter
-
 class DisplayMeterSerial(Enum):
     CIRCULAR_GAUGE = "circular_gauge"
     PLAIN_TEXT = "plain_text"

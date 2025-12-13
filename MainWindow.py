@@ -2,13 +2,16 @@ import os
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QApplication, QVBoxLayout, QSlider, QWidget, QSizePolicy, QHBoxLayout, QMenu
+from PyQt6.uic.properties import needsWidget
+
+from custom_widgets.DisplayMeter import DisplayMeter
 from dialogs.AddWidgetDialog import AddWidgetDialog
 from custom_widgets.OdometerWidget import OdometerWidget
 from custom_widgets.PlainTextDisplay import PlainTextDisplay
 from dialogs.ViewDatatypesDialog import ViewDatatypesDialog
 from dialogs.ViewLayoutsDialog import ViewLayoutsDialog
 from dialogs.ViewScriptsDialog import ViewScriptsDialog
-from utils.DataTypes import DisplayMeterSerial
+from utils.DataTypes import DisplayMeterSerial, DataType
 from utils.Layout import load_default_layout, load_layout
 from utils.OBDPaths import OBDPaths
 
@@ -16,85 +19,68 @@ slider_test = True
 
 class MainWindow(QMainWindow):
     def __init__(self):
+        """
+        Things that need to happen here:
+         - Set the window info. Geometry, title, central widget, layout, and menu items.
+         - Then, two options:
+            a.) No config file found - a bigass plus sign that takes you to a monitor creation window
+            b.) Config file found - create the widgets in the layout. They belong to the main window.
+                Keep the config file path here too so we can edit it, but we don't really need it past setup.
+        """
         super().__init__()
-        self.widget_list = []
+        # Set basic window info
         self.setWindowTitle("Aleko's Racecar OBD")
         self.setGeometry(100, 100, 1000, 600)
 
+        # Create the central widget that'll hold all of the non-permanent UI elements
         self.central_widget = QWidget(self)
         self.layout = QHBoxLayout(self.central_widget)
 
-        self.__set_monitor_widgets_items()
+        #self.__set_monitor_widgets_items()
+        # Set the menu
         self.__create_menu_items()
-        self.current_ui_layout = None
+        # And look for a configuration file
+        self.config = load_default_layout()
+        self.widget_list = []
+        # This is so that later on I can tell when the config has changed
+        self.configuration_name = None
 
-    def __set_monitor_widgets_items(self):
-        if slider_test:
-            val_test_widget1 = QWidget(self.central_widget)
-            self.__add_test_odometer("TEST", val_test_widget1)
-            self.widget_list.append(val_test_widget1)
+        # Finally. Doit
+        self.setup_ui_elements()
 
-            val_test_widget2 = QWidget(self.central_widget)
-            self.__add_test_plain_text("TEST", val_test_widget2)
-            self.widget_list.append(val_test_widget2)
-        else:
-            odometer = OdometerWidget("Speed", parent=self.central_widget)
-            odometer.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-            self.widget_list.append(odometer)
+    def setup_ui_elements(self):
+        """ Check the configuration member and the list of widgets. """
+        """ If the config member is not empty, clear the list, add the widgets to it, and store the name such that I can check if it changed
+            If it is and the list is empty (it should be on startup), default to an empty_layout  """
+        if self.config:
+            try:
+                self.widget_list.clear()
+                self.configuration_name = self.config.name # Store the config name to help detect changes to it later
+                for key, widget in self.config.widgets.items():
+                    temp_widget = self.generate_widget(widget)
+                    if temp_widget is not None:
+                        self.widget_list.append(temp_widget)
+                        self.layout.addWidget(self.widget_list[-1]) #messy. I dont like.
+                self.central_widget.setLayout(self.layout)
+                self.update()
+            except Exception as e:
+                print(e)
 
-        for widget in self.widget_list:
-            self.layout.addWidget(widget)
 
-        self.setCentralWidget(self.central_widget)
-
-    def __load_from_json(self, json_file): # Perhaps split this into load default layout and set layout
-        """Originally intended to hook up to the load_layout menu item, this has been repurposed for now to handle default layout testing. """
-        with open(json_file, encoding='utf-8') as json_file:
-            selected_layout = load_layout(json_file.read())
-
-        if selected_layout is not None:
-            if len(selected_layout.widgets) > 0:
-                self.current_ui_layout = selected_layout
-                self.update_layout()
-
-    def update_layout(self):
-        """ Updates the GUI when the layout assigned to the current_ui_layout member changes.
-            Right now, the test classes for UI elements are still in here and the HORIZONTAL_TACHOMETER does not work
-        """
-        val_test_widget = QWidget(self.central_widget)
-        for key in self.current_ui_layout.widgets:
-            match self.current_ui_layout.widgets[key].default_display_type.value:
-                case DisplayMeterSerial.CIRCULAR_GAUGE.value:
-                    self.__add_test_odometer(self.current_ui_layout.widgets[key].name, val_test_widget)
-                case DisplayMeterSerial.PLAIN_TEXT:
-                    self.__add_test_plain_text(key, val_test_widget)
-                case DisplayMeterSerial.HORIZONTAL_TACHOMETER:
-                    pass
-
-    ######################################################################
-    ####################  Display test setup  ############################
-    ######################################################################
-
-    def __add_test_odometer(self, name, val_test_widget):
-        odometer = OdometerWidget(name, parent=val_test_widget)
-        odometer.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        self.__add_test_slider(odometer, val_test_widget)
-
-    def __add_test_plain_text(self, name, val_test_widget):
-        plain_text = PlainTextDisplay(name, parent=val_test_widget)
-        plain_text.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        self.__add_test_slider(plain_text, val_test_widget)
-
-    def __add_test_slider(self, display_meter, parent):
-        slider_layout = QVBoxLayout(parent)
-
-        slider = QSlider(Qt.Orientation.Horizontal, parent=parent)
-        slider.setRange(0, 260)
-        slider.valueChanged.connect(display_meter.set_value)
-        slider.setFixedWidth(display_meter.sizeHint().width())
-
-        slider_layout.addWidget(display_meter)
-        slider_layout.addWidget(slider)
+    def generate_widget(self, widget) -> DisplayMeter | None:
+        match widget.default_display_type.value:
+            case DisplayMeterSerial.CIRCULAR_GAUGE.value:
+                new_widget = OdometerWidget(widget, self.central_widget)
+                new_widget.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+                return new_widget
+            case DisplayMeterSerial.PLAIN_TEXT.value:
+                new_widget = PlainTextDisplay(widget, self.central_widget)
+                new_widget.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+                return new_widget
+            case DisplayMeterSerial.HORIZONTAL_TACHOMETER:
+                return None #TODO
+            case _:
+                return None
 
     ######################################################################
 
@@ -172,6 +158,16 @@ class MainWindow(QMainWindow):
                 self.widget_list.append(val_test_widget)
                 self.layout.addWidget(self.widget_list[-1])
                 self.update()
+
+    def __load_from_json(self, json_file):  # Perhaps split this into load default layout and set layout
+        """intended to hook up to the load_layout menu item"""
+        with open(json_file, encoding='utf-8') as json_file:
+            selected_layout = load_layout(json_file.read())
+
+        if selected_layout is not None:
+            if len(selected_layout.widgets) > 0:
+                self.current_ui_layout = selected_layout
+                self.setup_ui_elements()
 
     def __begin_edit_state(self): #TODO
         print("Edit state started")

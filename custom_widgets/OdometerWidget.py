@@ -2,14 +2,15 @@ from PyQt6.QtCore import Qt, QPointF
 from PyQt6.QtGui import QColor, QPen, QPolygonF, QFont
 
 from custom_widgets.DisplayMeter import DisplayMeter
+from utils.DataTypes import DataType
 
 
 class OdometerWidget(DisplayMeter):
-    def __init__(self, name, parent=None):
-        super().__init__(name, parent)
+    def __init__(self, datatype: DataType, parent=None):
+        super().__init__(datatype, parent)
 
-        self.num_ticks = 14
-        self.tick_diff = 20
+        self.num_ticks = 11
+        self.tick_diff = 10
 
         self.widget_color = QColor('#2c3e50')
         self.tick_color = QColor(224, 38, 9)
